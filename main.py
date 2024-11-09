@@ -39,6 +39,16 @@ class AssistantManager:
             
         self.client = OpenAI(api_key=self.api_key)
         self.assistant_id = os.getenv("ASSISTANT_ID")
+        if not self.assistant_id:
+            raise ValueError("ASSISTANT_ID not found in environment variables")
+        
+        # Get the existing assistant and update its configuration
+        try:
+            self.assistant = self.client.beta.assistants.retrieve(self.assistant_id)
+            self.update_assistant_configuration()
+        except Exception as e:
+            raise ValueError(f"Could not retrieve assistant with ID {self.assistant_id}: {str(e)}")
+        
         self.thread_id = self.load_thread_id()
 
     def load_thread_id(self) -> Optional[str]:
@@ -170,8 +180,6 @@ class AssistantManager:
     def run(self) -> None:
         """Main conversation loop."""
         try:
-            self.assistant = self.create_assistant()
-            
             clear_screen()
             print_welcome_message()
             print_divider()
@@ -188,6 +196,20 @@ class AssistantManager:
         except Exception as e:
             print_system_message(f"Fatal error: {str(e)}")
             sys.exit(1)
+
+    def update_assistant_configuration(self) -> None:
+        """Update the assistant with current tools and instructions."""
+        try:
+            print_system_message("Updating assistant configuration...")
+            self.assistant = self.client.beta.assistants.update(
+                assistant_id=self.assistant_id,
+                instructions=SUPER_ASSISTANT_INSTRUCTIONS,
+                tools=get_tool_definitions(),
+                model=MODEL_NAME
+            )
+            print_system_message("Assistant configuration updated successfully!")
+        except Exception as e:
+            print_system_message(f"Warning: Failed to update assistant configuration: {str(e)}")
 
 def main():
     """Entry point of the application."""
