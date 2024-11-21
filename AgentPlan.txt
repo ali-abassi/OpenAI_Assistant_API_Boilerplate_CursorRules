@@ -1,0 +1,84 @@
+ToolPlans:
+
+First I want to reiterate, You are an AI assistant running in the Cursor AI program.  You are my 
+expert at coding and are especially good with Python.  The code you produce is neat, well documented, 
+and follows Python best practices.  We are also going to take advantage of your excellent ability 
+to follow Test Driven Development practices.  You will carefully follow both this program plan and 
+the CursorRules_AddaTool.md guide.
+
+We will first work together to clarify and improve the program plan, then we will work together to 
+build the project.  I have the project in GitHub, so remind me occasionally, and especially when we 
+have made major changes, to save a version to Git so we can back up if needed.  
+
+High level view of the system:
+This program was offered as a template to learn to build AI agents.  My plan is to use it to build 
+a personal assistant with a clear separation between:
+
+1. Core Intelligence Layer:
+   - Primary decision-making and processing
+   - API integrations and tool management
+   - State management and context handling
+   - Standardized interface for all UI interactions
+   - For development, we will use the model gpt-4o-mini-2024-07-18
+
+2. Interface Layer (to be developed separately):
+   - Voice command interface
+   - GUI for multiple platforms (phone, tablet, PC, Mac)
+   - Clear API endpoints for all UI interactions
+   - Interface-agnostic response formatting
+
+3. Infrastructure Integration:
+   Currently running in docker containers on local network:
+   - Open-WebUI
+   - ComfyUI Stable Diffusion
+   - Ollama (private/preferred LLM)
+   - SearXNG search tool
+   - Claude Computer Use Demo server
+   - Home Assistant on Pi
+
+4. External Services:
+   API access and credits in place for:
+   - Gmail
+   - Google Calendar
+   - Google Person (contacts)
+   - Google Tasks
+   - Claude
+   - ChatGPT
+
+What we want to achieve:
+At the highest level, we want to go for a system like Jarvis from the Iron Man movies.
+
+For this specific program, we want it to be the intelligence behind whatever interface we end up creating.
+This means:
+1. Clear separation between intelligence and interface layers
+2. Well-documented API endpoints for all functionality
+3. Standardized response formats that work across interfaces
+4. Flexible state management for different UI contexts
+5. Robust error handling and logging for debugging across layers
+
+Current Status:
+- Starting
+
+Next Steps:
+1. Add google people functions
+2. Implement standardized response formatting
+3. Create clear API documentation for future UI development
+4. Create interface-agnostic test suite
+5. Add OpenAI Assistant API integration
+6. Add SearXNG
+7. Add web scraping tool  Fire Crawl maps website, another program scrapes it.
+   Add OpenWebUI API docs
+8. Add Perplexity tool
+9. Add Todoist tool
+10. Add Home Assistant
+11. Add ComfyUI
+12. Look into Claude Computer control through API
+13. Summarize emails?  https://spaceterran.com/posts/Gmail-Summarization-Script-with-Ollama/
+
+
+
+
+
+
+Remember: All development should maintain strict separation between the intelligence layer and future 
+interface implementations.  

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This guide helps integrate new API tools into the assistant. As an AI assistant, I will:
+This guide helps integrate new API tools into the assistant. You are an AI assistant running in the Cursor AI program.  You are my expert at coding and are especially good with Python.  The code you produce is neat, well documented, and follows Python best practices. 
 
 1. 📝 Review Your API Details:
    - API documentation/instructions you provide

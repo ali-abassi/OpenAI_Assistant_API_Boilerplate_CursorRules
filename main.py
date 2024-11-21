@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from openai import OpenAI
+from openai.types.beta.threads import Run
 from dotenv import load_dotenv
 from typing import Optional, Dict, Any
 
@@ -21,9 +22,9 @@ from terminalstyle import (
     print_tool_usage,
 )
 from prompts import SUPER_ASSISTANT_INSTRUCTIONS
+from tools.file_tools import read_thread_id, save_thread_id, clear_thread_id
 
 # Constants
-THREAD_ID_FILE = "thread_id.txt"
 MODEL_NAME = "gpt-4o-mini"  # Using the latest model
 
 class AssistantManager:
@@ -49,114 +50,46 @@ class AssistantManager:
         except Exception as e:
             raise ValueError(f"Could not retrieve assistant with ID {self.assistant_id}: {str(e)}")
         
-        self.thread_id = self.load_thread_id()
-
-    def load_thread_id(self) -> Optional[str]:
-        """Load thread ID from file if it exists."""
-        if os.path.exists(THREAD_ID_FILE):
-            with open(THREAD_ID_FILE, "r") as file:
-                return file.read().strip()
-        return None
-
-    def save_thread_id(self, thread_id: str) -> None:
-        """Save thread ID to file."""
-        with open(THREAD_ID_FILE, "w") as file:
-            file.write(thread_id)
-
-    def create_assistant(self) -> Dict[str, Any]:
-        """Create a new assistant with specified configuration."""
-        return self.client.beta.assistants.create(
-            name="Super Assistant",
-            instructions=SUPER_ASSISTANT_INSTRUCTIONS,
-            model=MODEL_NAME,
-            tools=get_tool_definitions()
-        )
-
-    def cancel_active_runs(self) -> None:
-        """Cancel any active runs on the current thread."""
+        # Get existing thread or create new one
+        self.thread_id = read_thread_id()
         if not self.thread_id:
-            return
-            
-        try:
-            runs = self.client.beta.threads.runs.list(thread_id=self.thread_id)
-            for run in runs.data:
-                if run.status in ["in_progress", "queued", "requires_action"]:
-                    try:
-                        self.client.beta.threads.runs.cancel(
-                            thread_id=self.thread_id,
-                            run_id=run.id
-                        )
-                    except Exception:
-                        pass
-        except Exception:
-            pass
-
-    def wait_for_completion(self, run_id: str) -> Optional[Any]:
-        """Wait for a run to complete and handle any required actions."""
-        while True:
-            run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.thread_id, 
-                run_id=run_id
-            )
-            
-            if run.status == "requires_action":
-                try:
-                    tool_outputs = handle_tool_calls(run)
-                    for tool_call in run.required_action.submit_tool_outputs.tool_calls:
-                        print_tool_usage(tool_call.function.name)
-                    run = self.client.beta.threads.runs.submit_tool_outputs(
-                        thread_id=self.thread_id,
-                        run_id=run_id,
-                        tool_outputs=tool_outputs
-                    )
-                except Exception as e:
-                    print_system_message(f"Error handling tool calls: {str(e)}")
-                    return None
-                    
-            elif run.status == "completed":
-                return run
-                
-            elif run.status in ["failed", "cancelled", "expired"]:
-                print_system_message(f"Run ended with status: {run.status}")
-                return None
-                
-            time.sleep(0.5)
-
-    def reset_thread(self) -> None:
+            self.create_new_thread()
+    
+    def create_new_thread(self):
+        """Create a new thread and save it."""
+        thread = self.client.beta.threads.create()
+        self.thread_id = thread.id
+        save_thread_id(self.thread_id)
+        print_system_message("New conversation thread created.")
+    
+    def reset_thread(self):
         """Reset the conversation thread."""
-        self.cancel_active_runs()
-        self.thread_id = None
-        if os.path.exists(THREAD_ID_FILE):
-            os.remove(THREAD_ID_FILE)
-        print_system_message("Thread reset. Starting a new conversation.")
-
+        clear_thread_id()
+        self.create_new_thread()
+        print_system_message("Conversation thread has been reset.")
+    
     def process_user_input(self, user_input: str) -> bool:
-        """Process user input and return whether to continue the conversation."""
-        if user_input.lower() == "reset":
-            self.reset_thread()
-            return True
-            
-        if user_input.lower() == "quit":
-            self.cancel_active_runs()
-            print_system_message("Thank you for chatting! Goodbye.")
-            return False
-
+        """Process user input and return False if the conversation should end."""
         try:
-            # Create or ensure thread exists
-            if self.thread_id is None:
-                thread = self.client.beta.threads.create()
-                self.thread_id = thread.id
-                self.save_thread_id(self.thread_id)
-            else:
-                self.cancel_active_runs()
-
-            # Create message and run
+            # Handle special commands
+            if user_input.lower() in ['exit', 'quit']:
+                print_system_message("Goodbye!")
+                return False
+            elif user_input.lower() == 'reset':
+                self.reset_thread()
+                return True
+            
+            # Cancel any active runs first
+            self.cancel_active_runs()
+            
+            # Create message
             self.client.beta.threads.messages.create(
                 thread_id=self.thread_id,
                 role="user",
                 content=user_input
             )
 
+            # Create run
             run = self.client.beta.threads.runs.create(
                 thread_id=self.thread_id,
                 assistant_id=self.assistant.id
@@ -210,6 +143,51 @@ class AssistantManager:
             print_system_message("Assistant configuration updated successfully!")
         except Exception as e:
             print_system_message(f"Warning: Failed to update assistant configuration: {str(e)}")
+
+    def cancel_active_runs(self):
+        """Cancel any active runs on the current thread."""
+        try:
+            runs = self.client.beta.threads.runs.list(thread_id=self.thread_id)
+            for run in runs.data:
+                if run.status in ["queued", "in_progress"]:
+                    self.client.beta.threads.runs.cancel(
+                        thread_id=self.thread_id,
+                        run_id=run.id
+                    )
+        except Exception as e:
+            print_system_message(f"Error canceling runs: {str(e)}")
+    
+    def wait_for_completion(self, run_id: str, timeout: int = 300) -> Optional[Run]:
+        """Wait for a run to complete."""
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.thread_id,
+                run_id=run_id
+            )
+            
+            if run.status == "completed":
+                return run
+            elif run.status == "requires_action":
+                try:
+                    tool_outputs = handle_tool_calls(run)
+                    if tool_outputs:  # Only submit if we have outputs
+                        run = self.client.beta.threads.runs.submit_tool_outputs(
+                            thread_id=self.thread_id,
+                            run_id=run_id,
+                            tool_outputs=tool_outputs
+                        )
+                except Exception as e:
+                    print_system_message(f"Error handling tool calls: {str(e)}")
+                    return None
+            elif run.status in ["failed", "cancelled", "expired"]:
+                print_system_message(f"Run ended with status: {run.status}")
+                return None
+                
+            time.sleep(1)
+        
+        print_system_message("Run timed out")
+        return None
 
 def main():
     """Entry point of the application."""

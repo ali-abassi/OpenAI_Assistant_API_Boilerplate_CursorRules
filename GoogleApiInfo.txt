@@ -1,0 +1,364 @@
+The Google Calendar API is a RESTful API that can be accessed through explicit HTTP calls or using the Google Client Libraries. The API exposes most of the features available in the Google Calendar Web interface.
+
+Following is a list of common terms used in the Google Calendar API:
+
+Event
+An event on a calendar containing information such as the title, start and end times, and attendees. Events can be either single events or recurring events. An event is represented by an Event resource.
+Calendar
+A collection of events. Each calendar has associated metadata, such as calendar description or default calendar time zone. The metadata for a single calendar is represented by a Calendar resource.
+Calendar List
+A list of all calendars on a user's calendar list in the Calendar UI. The metadata for a single calendar that appears on the calendar list is represented by a CalendarListEntry resource. This metadata includes user-specific properties of the calendar, such as its color or notifications for new events.
+Setting
+A user preference from the Calendar UI, such as the user's time zone. A single user preference is represented by a Setting Resource.
+ACL
+An access control rule granting a user (or a group of users) a specified level of access to a calendar. A single access control rule is represented by an ACL resource.
+
+API Reference 
+
+bookmark_border
+This API reference is organized by resource type. Each resource type has one or more data representations and one or more methods.
+
+Resource types
+Acl 
+For Acl Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+delete	DELETE  /calendars/calendarId/acl/ruleId	Deletes an access control rule.
+get	GET  /calendars/calendarId/acl/ruleId	Returns an access control rule.
+insert	POST  /calendars/calendarId/acl	Creates an access control rule.
+list	GET  /calendars/calendarId/acl	Returns the rules in the access control list for the calendar.
+patch	PATCH  /calendars/calendarId/acl/ruleId	Updates an access control rule. This method supports patch semantics. Note that each patch request consumes three quota units; prefer using a get followed by an update. The field values you specify replace the existing values. Fields that you don't specify in the request remain unchanged. Array fields, if specified, overwrite the existing arrays; this discards any previous array elements.
+update	PUT  /calendars/calendarId/acl/ruleId	Updates an access control rule.
+watch	POST  /calendars/calendarId/acl/watch	Watch for changes to ACL resources.
+CalendarList 
+For CalendarList Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+delete	DELETE  /users/me/calendarList/calendarId	Removes a calendar from the user's calendar list.
+get	GET  /users/me/calendarList/calendarId	Returns a calendar from the user's calendar list.
+insert	POST  /users/me/calendarList	Inserts an existing calendar into the user's calendar list.
+list	GET  /users/me/calendarList	Returns the calendars on the user's calendar list.
+patch	PATCH  /users/me/calendarList/calendarId	Updates an existing calendar on the user's calendar list. This method supports patch semantics. Note that each patch request consumes three quota units; prefer using a get followed by an update. The field values you specify replace the existing values. Fields that you don't specify in the request remain unchanged. Array fields, if specified, overwrite the existing arrays; this discards any previous array elements.
+update	PUT  /users/me/calendarList/calendarId	Updates an existing calendar on the user's calendar list.
+watch	POST  /users/me/calendarList/watch	Watch for changes to CalendarList resources.
+Calendars 
+For Calendars Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+clear	POST  /calendars/calendarId/clear	Clears a primary calendar. This operation deletes all events associated with the primary calendar of an account.
+delete	DELETE  /calendars/calendarId	Deletes a secondary calendar. Use calendars.clear for clearing all events on primary calendars.
+get	GET  /calendars/calendarId	Returns metadata for a calendar.
+insert	POST  /calendars	Creates a secondary calendar.
+patch	PATCH  /calendars/calendarId	Updates metadata for a calendar. This method supports patch semantics. Note that each patch request consumes three quota units; prefer using a get followed by an update. The field values you specify replace the existing values. Fields that you don't specify in the request remain unchanged. Array fields, if specified, overwrite the existing arrays; this discards any previous array elements.
+update	PUT  /calendars/calendarId	Updates metadata for a calendar.
+Channels 
+For Channels Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+stop	POST  /channels/stop	Stop watching resources through this channel.
+Colors 
+For Colors Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+get	GET  /colors	Returns the color definitions for calendars and events.
+Events 
+For Events Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+delete	DELETE  /calendars/calendarId/events/eventId	Deletes an event.
+get	GET  /calendars/calendarId/events/eventId	Returns an event based on its Google Calendar ID. To retrieve an event using its iCalendar ID, call the events.list method using the iCalUID parameter.
+import	POST  /calendars/calendarId/events/import	Imports an event. This operation is used to add a private copy of an existing event to a calendar. Only events with an eventType of default may be imported.
+Deprecated behavior: If a non-default event is imported, its type will be changed to default and any event-type-specific properties it may have will be dropped.
+
+insert	POST  /calendars/calendarId/events	Creates an event.
+instances	GET  /calendars/calendarId/events/eventId/instances	Returns instances of the specified recurring event.
+list	GET  /calendars/calendarId/events	Returns events on the specified calendar.
+move	POST  /calendars/calendarId/events/eventId/move	Moves an event to another calendar, i.e. changes an event's organizer. Note that only default events can be moved; birthday, focusTime, fromGmail, outOfOffice and workingLocation events cannot be moved.
+Required query parameters: destination
+
+patch	PATCH  /calendars/calendarId/events/eventId	Updates an event. This method supports patch semantics. Note that each patch request consumes three quota units; prefer using a get followed by an update. The field values you specify replace the existing values. Fields that you don't specify in the request remain unchanged. Array fields, if specified, overwrite the existing arrays; this discards any previous array elements.
+quickAdd	POST  /calendars/calendarId/events/quickAdd	Creates an event based on a simple text string.
+Required query parameters: text
+
+update	PUT  /calendars/calendarId/events/eventId	Updates an event. This method does not support patch semantics and always updates the entire event resource. To do a partial update, perform a get followed by an update using etags to ensure atomicity.
+watch	POST  /calendars/calendarId/events/watch	Watch for changes to Events resources.
+Freebusy 
+For Freebusy Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+query	POST  /freeBusy	Returns free/busy information for a set of calendars.
+Settings 
+For Settings Resource details, see the resource representation page.
+
+Method	HTTP request	Description
+URIs relative to https://www.googleapis.com/calendar/v3, unless otherwise noted
+get	GET  /users/me/settings/setting	Returns a single user setting.
+list	GET  /users/me/settings	Returns all user settings for the authenticated user.
+watch	POST  /users/me/settings/watch	Watch for changes to Settings resources.
+
+Google Tasks API 
+
+bookmark_border
+The Google Tasks API lets you manage your tasks and task lists.
+
+Service: tasks.googleapis.com
+To call this service, we recommend that you use the Google-provided client libraries. If your application needs to use your own libraries to call this service, use the following information when you make the API requests.
+
+Discovery document
+A Discovery Document is a machine-readable specification for describing and consuming REST APIs. It is used to build client libraries, IDE plugins, and other tools that interact with Google APIs. One service may provide multiple discovery documents. This service provides the following discovery document:
+
+https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest
+Service endpoint
+A service endpoint is a base URL that specifies the network address of an API service. One service might have multiple service endpoints. This service has the following service endpoint and all URIs below are relative to this service endpoint:
+
+https://tasks.googleapis.com
+REST Resource: tasklists
+Methods
+delete	DELETE /tasks/v1/users/@me/lists/{tasklist}
+Deletes the authenticated user's specified task list.
+get	GET /tasks/v1/users/@me/lists/{tasklist}
+Returns the authenticated user's specified task list.
+insert	POST /tasks/v1/users/@me/lists
+Creates a new task list and adds it to the authenticated user's task lists.
+list	GET /tasks/v1/users/@me/lists
+Returns all the authenticated user's task lists.
+patch	PATCH /tasks/v1/users/@me/lists/{tasklist}
+Updates the authenticated user's specified task list.
+update	PUT /tasks/v1/users/@me/lists/{tasklist}
+Updates the authenticated user's specified task list.
+REST Resource: tasks
+Methods
+clear	POST /tasks/v1/lists/{tasklist}/clear
+Clears all completed tasks from the specified task list.
+delete	DELETE /tasks/v1/lists/{tasklist}/tasks/{task}
+Deletes the specified task from the task list.
+get	GET /tasks/v1/lists/{tasklist}/tasks/{task}
+Returns the specified task.
+insert	POST /tasks/v1/lists/{tasklist}/tasks
+Creates a new task on the specified task list.
+list	GET /tasks/v1/lists/{tasklist}/tasks
+Returns all tasks in the specified task list.
+move	POST /tasks/v1/lists/{tasklist}/tasks/{task}/move
+Moves the specified task to another position in the destination task list.
+patch	PATCH /tasks/v1/lists/{tasklist}/tasks/{task}
+Updates the specified task.
+update	PUT /tasks/v1/lists/{tasklist}/tasks/{task}
+Updates the specified task.
+
+Gmail API 
+
+bookmark_border
+The Gmail API lets you view and manage Gmail mailbox data like threads, messages, and labels.
+
+Service: gmail.googleapis.com
+To call this service, we recommend that you use the Google-provided client libraries. If your application needs to use your own libraries to call this service, use the following information when you make the API requests.
+
+Discovery document
+A Discovery Document is a machine-readable specification for describing and consuming REST APIs. It is used to build client libraries, IDE plugins, and other tools that interact with Google APIs. One service may provide multiple discovery documents. This service provides the following discovery document:
+
+https://gmail.googleapis.com/$discovery/rest?version=v1
+Service endpoint
+A service endpoint is a base URL that specifies the network address of an API service. One service might have multiple service endpoints. This service has the following service endpoint and all URIs below are relative to this service endpoint:
+
+https://gmail.googleapis.com
+REST Resource: v1.users
+Methods
+getProfile	GET /gmail/v1/users/{userId}/profile
+Gets the current user's Gmail profile.
+stop	POST /gmail/v1/users/{userId}/stop
+Stop receiving push notifications for the given user mailbox.
+watch	POST /gmail/v1/users/{userId}/watch
+Set up or update a push notification watch on the given user mailbox.
+REST Resource: v1.users.drafts
+Methods
+create	POST /gmail/v1/users/{userId}/drafts
+POST /upload/gmail/v1/users/{userId}/drafts
+Creates a new draft with the DRAFT label.
+delete	DELETE /gmail/v1/users/{userId}/drafts/{id}
+Immediately and permanently deletes the specified draft.
+get	GET /gmail/v1/users/{userId}/drafts/{id}
+Gets the specified draft.
+list	GET /gmail/v1/users/{userId}/drafts
+Lists the drafts in the user's mailbox.
+send	POST /gmail/v1/users/{userId}/drafts/send
+POST /upload/gmail/v1/users/{userId}/drafts/send
+Sends the specified, existing draft to the recipients in the To, Cc, and Bcc headers.
+update	PUT /gmail/v1/users/{userId}/drafts/{id}
+PUT /upload/gmail/v1/users/{userId}/drafts/{id}
+Replaces a draft's content.
+REST Resource: v1.users.history
+Methods
+list	GET /gmail/v1/users/{userId}/history
+Lists the history of all changes to the given mailbox.
+REST Resource: v1.users.labels
+Methods
+create	POST /gmail/v1/users/{userId}/labels
+Creates a new label.
+delete	DELETE /gmail/v1/users/{userId}/labels/{id}
+Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.
+get	GET /gmail/v1/users/{userId}/labels/{id}
+Gets the specified label.
+list	GET /gmail/v1/users/{userId}/labels
+Lists all labels in the user's mailbox.
+patch	PATCH /gmail/v1/users/{userId}/labels/{id}
+Patch the specified label.
+update	PUT /gmail/v1/users/{userId}/labels/{id}
+Updates the specified label.
+REST Resource: v1.users.messages
+Methods
+batchDelete	POST /gmail/v1/users/{userId}/messages/batchDelete
+Deletes many messages by message ID.
+batchModify	POST /gmail/v1/users/{userId}/messages/batchModify
+Modifies the labels on the specified messages.
+delete	DELETE /gmail/v1/users/{userId}/messages/{id}
+Immediately and permanently deletes the specified message.
+get	GET /gmail/v1/users/{userId}/messages/{id}
+Gets the specified message.
+import	POST /gmail/v1/users/{userId}/messages/import
+POST /upload/gmail/v1/users/{userId}/messages/import
+Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP.
+insert	POST /gmail/v1/users/{userId}/messages
+POST /upload/gmail/v1/users/{userId}/messages
+Directly inserts a message into only this user's mailbox similar to IMAP APPEND, bypassing most scanning and classification.
+list	GET /gmail/v1/users/{userId}/messages
+Lists the messages in the user's mailbox.
+modify	POST /gmail/v1/users/{userId}/messages/{id}/modify
+Modifies the labels on the specified message.
+send	POST /gmail/v1/users/{userId}/messages/send
+POST /upload/gmail/v1/users/{userId}/messages/send
+Sends the specified message to the recipients in the To, Cc, and Bcc headers.
+trash	POST /gmail/v1/users/{userId}/messages/{id}/trash
+Moves the specified message to the trash.
+untrash	POST /gmail/v1/users/{userId}/messages/{id}/untrash
+Removes the specified message from the trash.
+REST Resource: v1.users.messages.attachments
+Methods
+get	GET /gmail/v1/users/{userId}/messages/{messageId}/attachments/{id}
+Gets the specified message attachment.
+REST Resource: v1.users.settings
+Methods
+getAutoForwarding	GET /gmail/v1/users/{userId}/settings/autoForwarding
+Gets the auto-forwarding setting for the specified account.
+getImap	GET /gmail/v1/users/{userId}/settings/imap
+Gets IMAP settings.
+getLanguage	GET /gmail/v1/users/{userId}/settings/language
+Gets language settings.
+getPop	GET /gmail/v1/users/{userId}/settings/pop
+Gets POP settings.
+getVacation	GET /gmail/v1/users/{userId}/settings/vacation
+Gets vacation responder settings.
+updateAutoForwarding	PUT /gmail/v1/users/{userId}/settings/autoForwarding
+Updates the auto-forwarding setting for the specified account.
+updateImap	PUT /gmail/v1/users/{userId}/settings/imap
+Updates IMAP settings.
+updateLanguage	PUT /gmail/v1/users/{userId}/settings/language
+Updates language settings.
+updatePop	PUT /gmail/v1/users/{userId}/settings/pop
+Updates POP settings.
+updateVacation	PUT /gmail/v1/users/{userId}/settings/vacation
+Updates vacation responder settings.
+REST Resource: v1.users.settings.cse.identities
+Methods
+create	POST /gmail/v1/users/{userId}/settings/cse/identities
+Creates and configures a client-side encryption identity that's authorized to send mail from the user account.
+delete	DELETE /gmail/v1/users/{userId}/settings/cse/identities/{cseEmailAddress}
+Deletes a client-side encryption identity.
+get	GET /gmail/v1/users/{userId}/settings/cse/identities/{cseEmailAddress}
+Retrieves a client-side encryption identity configuration.
+list	GET /gmail/v1/users/{userId}/settings/cse/identities
+Lists the client-side encrypted identities for an authenticated user.
+patch	PATCH /gmail/v1/users/{userId}/settings/cse/identities/{emailAddress}
+Associates a different key pair with an existing client-side encryption identity.
+REST Resource: v1.users.settings.cse.keypairs
+Methods
+create	POST /gmail/v1/users/{userId}/settings/cse/keypairs
+Creates and uploads a client-side encryption S/MIME public key certificate chain and private key metadata for the authenticated user.
+disable	POST /gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:disable
+Turns off a client-side encryption key pair.
+enable	POST /gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:enable
+Turns on a client-side encryption key pair that was turned off.
+get	GET /gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}
+Retrieves an existing client-side encryption key pair.
+list	GET /gmail/v1/users/{userId}/settings/cse/keypairs
+Lists client-side encryption key pairs for an authenticated user.
+obliterate	POST /gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:obliterate
+Deletes a client-side encryption key pair permanently and immediately.
+REST Resource: v1.users.settings.delegates
+Methods
+create	POST /gmail/v1/users/{userId}/settings/delegates
+Adds a delegate with its verification status set directly to accepted, without sending any verification email.
+delete	DELETE /gmail/v1/users/{userId}/settings/delegates/{delegateEmail}
+Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it.
+get	GET /gmail/v1/users/{userId}/settings/delegates/{delegateEmail}
+Gets the specified delegate.
+list	GET /gmail/v1/users/{userId}/settings/delegates
+Lists the delegates for the specified account.
+REST Resource: v1.users.settings.filters
+Methods
+create	POST /gmail/v1/users/{userId}/settings/filters
+Creates a filter.
+delete	DELETE /gmail/v1/users/{userId}/settings/filters/{id}
+Immediately and permanently deletes the specified filter.
+get	GET /gmail/v1/users/{userId}/settings/filters/{id}
+Gets a filter.
+list	GET /gmail/v1/users/{userId}/settings/filters
+Lists the message filters of a Gmail user.
+REST Resource: v1.users.settings.forwardingAddresses
+Methods
+create	POST /gmail/v1/users/{userId}/settings/forwardingAddresses
+Creates a forwarding address.
+delete	DELETE /gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}
+Deletes the specified forwarding address and revokes any verification that may have been required.
+get	GET /gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}
+Gets the specified forwarding address.
+list	GET /gmail/v1/users/{userId}/settings/forwardingAddresses
+Lists the forwarding addresses for the specified account.
+REST Resource: v1.users.settings.sendAs
+Methods
+create	POST /gmail/v1/users/{userId}/settings/sendAs
+Creates a custom "from" send-as alias.
+delete	DELETE /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}
+Deletes the specified send-as alias.
+get	GET /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}
+Gets the specified send-as alias.
+list	GET /gmail/v1/users/{userId}/settings/sendAs
+Lists the send-as aliases for the specified account.
+patch	PATCH /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}
+Patch the specified send-as alias.
+update	PUT /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}
+Updates a send-as alias.
+verify	POST /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/verify
+Sends a verification email to the specified send-as alias address.
+REST Resource: v1.users.settings.sendAs.smimeInfo
+Methods
+delete	DELETE /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}
+Deletes the specified S/MIME config for the specified send-as alias.
+get	GET /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}
+Gets the specified S/MIME config for the specified send-as alias.
+insert	POST /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo
+Insert (upload) the given S/MIME config for the specified send-as alias.
+list	GET /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo
+Lists S/MIME configs for the specified send-as alias.
+setDefault	POST /gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault
+Sets the default S/MIME config for the specified send-as alias.
+REST Resource: v1.users.threads
+Methods
+delete	DELETE /gmail/v1/users/{userId}/threads/{id}
+Immediately and permanently deletes the specified thread.
+get	GET /gmail/v1/users/{userId}/threads/{id}
+Gets the specified thread.
+list	GET /gmail/v1/users/{userId}/threads
+Lists the threads in the user's mailbox.
+modify	POST /gmail/v1/users/{userId}/threads/{id}/modify
+Modifies the labels applied to the thread.
+trash	POST /gmail/v1/users/{userId}/threads/{id}/trash
+Moves the specified thread to the trash.
+untrash	POST /gmail/v1/users/{userId}/threads/{id}/untrash
+Removes the specified thread from the trash.
